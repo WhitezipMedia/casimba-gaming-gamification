@@ -1,0 +1,11 @@
+{
+  "name": "casimba-gaming-gamification",
+  "version": "1.0.0",
+  "description": "Casimba Gaming Gamification",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Casimba Gaming",
+  "license": "ISC"
+}
