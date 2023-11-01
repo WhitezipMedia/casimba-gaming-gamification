@@ -15,13 +15,6 @@ export default class Ezugi {
 const wsUri = "engineint.tableslive.com/GameServer/gameNotifications";
 const socket = new WebSocket("wss://"+wsUri);
 
-
-window.addEventListener(
-    "message",
-    (event) => {
-        if(event.origin !== 'https://fecmsapi.casimbagaming.com') console.log(event);
-    }
-);
 window.addEventListener("message", (e) => {
     if(e.origin !== "https://fecmsapi.casimbagaming.com") console.log(e)
 }, false);
