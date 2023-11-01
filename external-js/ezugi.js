@@ -16,12 +16,12 @@ var ezugixlg = {
         };
         let data = {...self.data, ...{"MessageType": "InitializeSession"}}
         self.wsUri = wsUri;
-        console.log('connecting to ' + 'wss://' + wsUri + '/ws');
+        console.log('connecting to ' + 'wss://' + wsUri);
         if(self.websocket !== null && self.websocket.readyState !== 3){
             self.websocket.close();
             console.log('Socket open closing it');
         }
-        self.websocket = new WebSocket('wss://' + wsUri + '/ws');
+        self.websocket = new WebSocket('wss://' + wsUri);
         self.websocket.onopen = function(evt) {
             self.onWsOpen(data)
         };
@@ -29,6 +29,7 @@ var ezugixlg = {
             self.onWsClose(evt)
         };
         self.websocket.onmessage = function(evt) {
+            console.log(evt);
             self.onWsMessage(evt)
         };
         self.websocket.onerror = function(evt) {
@@ -38,6 +39,7 @@ var ezugixlg = {
     // public
     onMessage : function(data) {
         // to fill
+        console.log('recieved', data);
     },
     // public
     onConnect : function() {
@@ -84,7 +86,7 @@ var ezugixlg = {
 
         self.doWsSend(data)
 
-        console.log('Connected to ezugi wss server');
+        console.log(data);
         if (self.tableId) {
             self.Auhtenticate()
         }

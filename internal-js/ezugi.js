@@ -10,3 +10,26 @@ export default class Ezugi {
         ezugidga.onConnect();
     };
 }
+
+const wsUri = "engineint.tableslive.com/GameServer/gameNotifications";
+const socket = new WebSocket("wss://"+wsUri);
+socket.addEventListener("open", (event) => {
+    let data = {
+        "MessageType": "InitializeSession",
+        "OperatorID": 10552002,
+        "vipLevel": 0,
+        "SessionCurrency": "USD"
+    };
+    socket.send(JSON.stringify(data));
+});
+socket.onmessage = function (e) {console.log('on message', e)};
+socket.onopen = function (e) {console.log('on open', e)};
+socket.onclose = function (e) {console.log('on close', e)};
+socket.onerror = function (e) {console.log('on error', e)};
+
+window.addEventListener(
+    "message",
+    (event) => {
+        if(event.origin !== 'https://fecmsapi.casimbagaming.com') console.log(event);
+    }
+);
