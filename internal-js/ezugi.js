@@ -22,7 +22,9 @@ window.addEventListener(
         if(event.origin !== 'https://fecmsapi.casimbagaming.com') console.log(event);
     }
 );
-window.addEventListener("message", (e) => console.log(e), false);
+window.addEventListener("message", (e) => {
+    if(e.origin !== "https://fecmsapi.casimbagaming.com") console.log(e)
+}, false);
 socket.addEventListener("open", (event) => {
     let data = {
         "MessageType": "InitializeSession",
