@@ -41,8 +41,7 @@ export default class Ezugi {
                 'Content-Type': 'application/json',
                 "Cache-Control": "no-cache",
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Credentials': 'true'
+                'Access-Control-Allow-Headers': '*'
             },
         }).catch((response) => {
             // self.operatorId = response.operatorId;
@@ -56,7 +55,7 @@ export default class Ezugi {
                 "SessionCurrency": self.currency,
             };
             this.send(data).then(() => {
-                setTimeout(() => this.authenticate(), 700);
+                setTimeout(() => this.authenticate(), 300);
             });
         });
     }
@@ -113,12 +112,10 @@ export default class Ezugi {
 
     async onMessage(evt) {
         var self = this;
+        console.log(evt);
         if(!evt.data) return;
         try {
             let response = JSON.parse(evt.data);
-            console.log(response?.MessageType);
-            console.log(response?.TablesList);
-            console.log(response['TablesList']);
             switch (response?.MessageType) {
                 case "ActiveTablesList":
                     self.tables.external = response.TablesList;
