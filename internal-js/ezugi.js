@@ -9,10 +9,21 @@ export default class Ezugi {
         this.vipLevel = vipLevel;
         this.currency = currency;
         let defaultOptions = {
-            tryToConnect: false
+            tryToConnect: false,
+            ui: {
+                seats: {
+                    show: true,
+                    show_taken: true,
+                    show_dealer: false,
+                    taken_color: '#ff0000',
+                    available_color: '#008000',
+                    dealer_color: '#FFBF00',
+                    class_identifier: 'seats'
+                }
+            },
         };
         this.options = {...defaultOptions, options};
-        this.connectionTries = 1;
+        this.connectionTries = 3;
         this.tables = {
             internal: null,
             external: null,
@@ -36,17 +47,14 @@ export default class Ezugi {
             "operatorId" : self.operator,
             "provider" : "ezugi"
         };
-        axios.post('https://b2basia-evolve.qa.markortech.com/games-connect/api/v1/liveTableDetails',postData, {
+        axios.post('https://qa-gameplay-api.casimbagaming.com/games-connect/api/v1/liveTableDetails', postData, {
             headers: {
                 'Content-Type': 'application/json',
-                "Cache-Control": "no-cache",
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': '*'
             },
-        }).catch((response) => {
-            // self.operatorId = response.operatorId;
-            self.tables.internal = response.games;
+        }).then((response) => {
+            // self.operatorId = response.data.operatorId;
             self.operatorId = 10552002;
+            self.tables.internal = response.data.games;
             console.log(response);
             let data = {
                 "MessageType": "InitializeSession",
@@ -63,7 +71,7 @@ export default class Ezugi {
     authenticate() {
         var self = this;
         axios.get('https://fecmsapi.casimbagaming.com/api/check',{}).then((response) => {
-            console.log(response);
+            console.log(response.data.Token);
             let data = {
                 "MessageType": "AuthenticateSession",
                 "OperatorID": self.operatorId,
@@ -100,7 +108,7 @@ export default class Ezugi {
         console.log("IM here");
         for (const externalTable of self.tables.external) {
             let exists = self.tables.internal.some((internal) => {
-                if (internal.gameId === externalTable.TableId) {
+                if (parseInt(internal.externalId) === parseInt(externalTable.TableId)) {
                     externalTable.gameId = internal.gameId;
                     return true;
                 }
@@ -120,6 +128,7 @@ export default class Ezugi {
                 case "ActiveTablesList":
                     self.tables.external = response.TablesList;
                     await this.generateMixTables();
+                    this.onActiveTablesList();
                     break;
                 case "SeatsStatus":
                     break;
@@ -181,5 +190,27 @@ export default class Ezugi {
             "OperatorID": self.operatorId
         };
         this.socket.send(JSON.stringify(data));
+    }
+
+    onActiveTablesList() {
+        var self = this;
+        this.tables.mix.forEach((game) => {
+            if(self.options?.ui?.seats?.show && game?.AvailableSeats) {
+                let html = '<div>';
+                let lastSeatHtml = '';
+                game.AvailableSeats.forEach((seat) => {
+                    if(seat.SeatId === 'd') return;
+                    if(seat.Taken) {
+                        html += '<div data-seat="'+seat.SeatId+'" style="color: '+self.options.ui.seats.taken_color+'">&spades;</div>';
+                    } else if (!seat.Taken && self.options.ui.seats.show_taken) {
+                        html += '<div data-seat="'+seat.SeatId+'" style="color: '+self.options.ui.seats.available_color+'">&spades;</div>';
+                    }
+                });
+                html += '</div>';
+                document.querySelectorAll('[data-gameCode="'+game.gameId+'"]').forEach((element) => {
+                    element.querySelector('.'+self.options.ui.seats.class_identifier)?.insertAdjacentHTML('beforeend', html);
+                })
+            }
+        });
     }
 }
