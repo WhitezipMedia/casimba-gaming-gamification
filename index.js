@@ -2,6 +2,7 @@
 
 // import Pragmatic from './internal-js/pragmatic';
 import Ezugi from './internal-js/ezugi';
+import Pragmatic from "./internal-js/pragmatic";
 
 class CGWidget {
     constructor() {
@@ -10,7 +11,7 @@ class CGWidget {
     }
 
     connectPragmaticAPI() {
-        this.pragmatic = new Ezugi(10552002);
+        this.pragmatic = new Pragmatic(6156);
     }
 
     connectEzugiAPI() {

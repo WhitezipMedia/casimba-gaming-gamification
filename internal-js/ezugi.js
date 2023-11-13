@@ -9,21 +9,32 @@ export default class Ezugi {
         this.vipLevel = vipLevel;
         this.currency = currency;
         let defaultOptions = {
-            tryToConnect: false,
+            tryToConnect: true,
             ui: {
+                container: 'body',
                 seats: {
                     show: true,
                     show_taken: true,
-                    show_dealer: false,
                     taken_color: '#ff0000',
                     available_color: '#008000',
-                    dealer_color: '#FFBF00',
                     class_identifier: 'seats'
+                },
+                limits: {
+                    maxBetBehind_class_identifier: false,
+                    maxSideBet_class_identifier: false,
+                    maxBet_class_identifier: false,
+                    minBetBehind_class_identifier: false,
+                    minSideBet_class_identifier: false,
+                    minBet_class_identifier: false,
+                    chips_class_identifier: false,
                 }
             },
         };
         this.options = {...defaultOptions, options};
-        this.connectionTries = 3;
+        this.connectionTries = 1;
+        this.hasAuthenticate = false;
+        this.timeOut = 700;
+        this.retryTimeOut = 200000;
         this.tables = {
             internal: null,
             external: null,
@@ -34,11 +45,11 @@ export default class Ezugi {
 
     connect() {
         var self = this;
-        this.socket = new WebSocket("wss://"+wsUri);
-        this.socket.onmessage = function (evt) {self.onMessage(evt)};
-        this.socket.onopen = function (evt) {self.onOpen(evt)};
-        this.socket.onclose = function (evt) {self.onClose(evt)};
-        this.socket.onerror = function (evt) {self.onError(evt)};
+        self.socket = new WebSocket("wss://"+wsUri);
+        self.socket.onmessage = function (evt) {self.onMessage(evt)};
+        self.socket.onopen = function (evt) {self.onOpen(evt)};
+        self.socket.onclose = function (evt) {self.onClose(evt)};
+        self.socket.onerror = function (evt) {self.onError(evt)};
     }
 
     async initialize() {
@@ -62,9 +73,11 @@ export default class Ezugi {
                 "vipLevel": self.vipLevel,
                 "SessionCurrency": self.currency,
             };
-            this.send(data).then(() => {
-                setTimeout(() => this.authenticate(), 300);
+            self.send(data).then(() => {
+                setTimeout(() => this.authenticate(), self.timeOut);
             });
+        }).catch(e => {
+            console.log(e);
         });
     }
 
@@ -79,33 +92,41 @@ export default class Ezugi {
                 "SessionCurrency": self.currency,
                 "Token": response.data.Token
             };
-            this.send(data);
+            console.log('sending', data);
+            self.send(data).then(() => {
+                setTimeout(() => {
+                    if(!self.hasAuthenticate) self.socket.close();
+                }, self.retryTimeOut);
+            });
         }).catch((e) => {
             console.log(e);
-            this.socket.close();
+            self.socket.close();
         });
     }
 
     async send(data){
-        this.socket.send(JSON.stringify(data));
+        var self = this;
+        self.socket.send(JSON.stringify(data));
     }
 
     onOpen(evt) {
         var self = this;
-        this.initialize();
+        self.initialize();
     }
 
     onClose(evt) {
-        if(this.options?.tryToConnect && this.connectionTries < 3) {
-            this.connectionTries++;
-            this.connect();
+        var self = this;
+        self.hasAuthenticate = false;
+        console.log(self.connectionTries);
+        if(self.options?.tryToConnect && self.connectionTries < 5) {
+            self.connectionTries++;
+            self.connect();
         }
     }
 
     async generateMixTables() {
         var self = this;
         self.tables.mix = [];
-        console.log("IM here");
         for (const externalTable of self.tables.external) {
             let exists = self.tables.internal.some((internal) => {
                 if (parseInt(internal.externalId) === parseInt(externalTable.TableId)) {
@@ -122,19 +143,35 @@ export default class Ezugi {
         var self = this;
         console.log(evt);
         if(!evt.data) return;
+        self.hasAuthenticate = true;
         try {
             let response = JSON.parse(evt.data);
             switch (response?.MessageType) {
                 case "ActiveTablesList":
                     self.tables.external = response.TablesList;
-                    await this.generateMixTables();
-                    this.onActiveTablesList();
+                    await self.generateMixTables();
+                    self.onActiveTablesList();
                     break;
                 case "SeatsStatus":
                     break;
                 case "SuccessfulRegistration":
                     break;
                 case "SuccessfulUnegistration":
+                    break;
+                case "Error":
+                    switch (response.ErrorCode) {
+                        case "30081":
+                            self.hasAuthenticate = false;
+                            self.socket.close();
+                            break;
+                        case "30057":
+                            self.hasAuthenticate = false;
+                            self.options.tryToConnect = false;
+                            self.socket.close();
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 default:
                     break;
@@ -146,7 +183,7 @@ export default class Ezugi {
     }
 
     onError(evt) {
-        console.log('Error WSS', evt.data);
+        console.log('Error WSS --------------------------------------------------', evt.data);
     }
 
     refresh() {
@@ -157,7 +194,7 @@ export default class Ezugi {
             "vipLevel": self.vipLevel,
             "SessionCurrency": self.currency,
         };
-        this.socket.send(JSON.stringify(data));
+        self.socket.send(JSON.stringify(data));
     }
 
     refreshSeats() {
@@ -169,7 +206,7 @@ export default class Ezugi {
             "destination":"table",
             "MessageType":"SeatsStatusRequest"
         };
-        this.socket.send(JSON.stringify(data));
+        self.socket.send(JSON.stringify(data));
     }
 
     unregisterTables() {
@@ -179,7 +216,7 @@ export default class Ezugi {
             "MessageType":"UnregisterSessionByTableId",
             "OperatorID": self.operatorId
         };
-        this.socket.send(JSON.stringify(data));
+        self.socket.send(JSON.stringify(data));
     }
 
     registerTables() {
@@ -189,15 +226,14 @@ export default class Ezugi {
             "MessageType":"RegisterSessionByTableId",
             "OperatorID": self.operatorId
         };
-        this.socket.send(JSON.stringify(data));
+        self.socket.send(JSON.stringify(data));
     }
 
     onActiveTablesList() {
         var self = this;
-        this.tables.mix.forEach((game) => {
+        self.tables.mix.forEach((game) => {
             if(self.options?.ui?.seats?.show && game?.AvailableSeats) {
                 let html = '<div>';
-                let lastSeatHtml = '';
                 game.AvailableSeats.forEach((seat) => {
                     if(seat.SeatId === 'd') return;
                     if(seat.Taken) {
@@ -207,10 +243,21 @@ export default class Ezugi {
                     }
                 });
                 html += '</div>';
-                document.querySelectorAll('[data-gameCode="'+game.gameId+'"]').forEach((element) => {
-                    element.querySelector('.'+self.options.ui.seats.class_identifier)?.insertAdjacentHTML('beforeend', html);
-                })
+                document.querySelector(self.options.ui.container+' [data-gameCode="'+game.gameId+'"] .'+self.options.ui.seats.class_identifier)?.insertAdjacentHTML('beforeend', html);
             }
+            // if(self.options?.ui?.seats?.show && game?.LimitsList) {
+            //     let html = '<div>';
+            //     game.AvailableSeats.forEach((seat) => {
+            //         if(seat.SeatId === 'd') return;
+            //         if(seat.Taken) {
+            //             html += '<div data-seat="'+seat.SeatId+'" style="color: '+self.options.ui.seats.taken_color+'">&spades;</div>';
+            //         } else if (!seat.Taken && self.options.ui.seats.show_taken) {
+            //             html += '<div data-seat="'+seat.SeatId+'" style="color: '+self.options.ui.seats.available_color+'">&spades;</div>';
+            //         }
+            //     });
+            //     html += '</div>';
+            //     document.querySelector(self.options.ui.container+' [data-gameCode="'+game.gameId+'"] .'+self.options.ui.seats.class_identifier)?.insertAdjacentHTML('beforeend', html);
+            // }
         });
     }
 }
