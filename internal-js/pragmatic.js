@@ -9,20 +9,30 @@ export default class Pragmatic {
         this.currency = currency;
         let defaultOptions = {
             tryToConnect: true,
-            class_dealer_name: 'cgdealer',
             ui: {
-                seats: {
+                class_dealer_name: 'cg-dealer',
+                currency: {
                     show: true,
-                    show_icons_max: 8,
-                    show_taken: true,
-                    taken_class: 'cgtaken',
-                    available_class: 'cgavailable',
-                    class_identifier: 'cgseats'
+                    position: 'default', //default or start or end,
+                    symbol: 'default'
+                },
+                seats: {
+                    massive: {
+                        // This will only show the numbers
+                        class_taken: 'cg-massive-taken',
+                        class_available: 'cg-massive-available',
+                        class_all: 'cg-massive-all',
+                    },
+                    few: {
+                        class_main: 'cg-few-seats',
+                        taken_class_identifier: 'cg-few-taken',
+                        available_class_identifier: 'cg-few-available',
+                        inside_html: '<i class="fa fa-bars"></i>'
+                    }
                 },
                 limits: {
-                    show: false,
-                    class_min_bet: 'cgminbet',
-                    class_max_bet: 'cgmaxbet',
+                    class_min_bet: 'cg-minbet',
+                    class_max_bet: 'cg-maxbet',
                 }
             },
         };
@@ -83,12 +93,11 @@ export default class Pragmatic {
         this.socket.send(JSON.stringify(data));
     }
 
-    onOpen(evt) {
-        var self = this;
+    onOpen() {
         this.initialize();
     }
 
-    onClose(evt) {
+    onClose() {
         if(this.options?.tryToConnect && this.connectionTries < 3) {
             this.connectionTries++;
             this.connect();
@@ -162,14 +171,136 @@ export default class Pragmatic {
     onRegisterTableMessageRecieved(data) {
         var self = this;
         document.querySelectorAll('[data-cgtrack="'+data.tableId+'"]').forEach((element) => {
-            if(self.ui?.seats?.show && data.totalSeatedPlayers) {
-                let seats = Object.keys(data).filter(e => e.startsWith('seat'));
-                self.manageSeats(seats, element);
+            // Dealers name
+            if(self.options?.ui?.class_dealer_name && data.dealer?.name) {
+                element.querySelectorAll('.'+self.options.ui.class_dealer_name).forEach(element2 => {
+                    element2.innerHTML = data.dealer.name;
+                })
+            }
+            //available massive seats
+            if(self.options?.ui?.seats?.massive?.class_available && data.totalSeatedPlayers && data.tableLimits?.maxPlayers) {
+                let availableSeats = parseInt(data.tableLimits.maxPlayers) - parseInt(data.totalSeatedPlayers);
+                element.querySelectorAll('.'+self.options.ui.seats.massive.class_available).forEach(element2 => {
+                    element2.innerHTML = availableSeats.toString();
+                })
+            }
+            //taken massive seats
+            if(self.options?.ui?.seats?.massive?.class_taken && data.totalSeatedPlayers) {
+                element.querySelectorAll('.'+self.options.ui.seats.massive.class_taken).forEach(element2 => {
+                    element2.innerHTML = data.totalSeatedPlayers.toString();
+                })
+            }
+            //all massive seats
+            if(self.options?.ui?.seats?.massive?.class_all && data.tableLimits?.maxPlayers) {
+                element.querySelectorAll('.'+self.options.ui.seats.massive.class_all).forEach(element2 => {
+                    element2.innerHTML = data.tableLimits.maxPlayers.toString();
+                })
+            }
+            //seats game live few
+            if(self.options?.ui?.seats?.few?.class_main && data.availableSeats) {
+                element.querySelectorAll('.'+self.options.ui.seats.few.class_main).forEach(element2 => {
+                    let seats = getAttributesByKeyStart(data, 'seat');
+                    let html = '';
+                    let needsTocreate = false;
+                    Object.entries(seats).forEach(([key, value]) => {
+                        let occupiedClass = value?self.options.ui.seats.few.taken_class_identifier:self.options.ui.seats.few.available_class_identifier;
+                        let seatElement = element2.querySelector('.cg-'+key);
+                        if(!needsTocreate && seatElement) {
+                            if(!seatElement.classList.contains(occupiedClass)) {
+                                seatElement.classList.remove(self.options.ui.seats.few.taken_class_identifier);
+                                seatElement.classList.remove(self.options.ui.seats.few.available_class_identifier);
+                                seatElement.classList.add(occupiedClass);
+                            }
+                        } else {
+                            needsTocreate = true;
+                        }
+                        html += '<div class="cg-'+key+' '+occupiedClass+'">'+self.options.ui.seats.few.inside_html+'</div>';
+                    });
+                    if(needsTocreate)
+                        element2.innerHTML = html;
+                })
+            }
+            //limit min bet
+            if(self.options?.ui?.limits?.class_min_bet) {
+                element.querySelectorAll('.'+self.options?.ui.limits.class_min_bet).forEach(element2 => {
+                    element2.innerHTML = self.getBeautyCurrency(data.tableLimits.minBet, data.currency);
+                })
+            }
+            //limit max bet
+            if(self.options?.ui?.limits?.class_max_bet) {
+                element.querySelectorAll('.'+self.options?.ui.limits.class_max_bet).forEach(element2 => {
+                    element2.innerHTML =self.getBeautyCurrency(data.tableLimits.maxBet, data.currency);
+                })
             }
         });
     }
 
-    manageSeats(seats, element) {
-        console.log(seats);
+    getBeautyCurrency(amount, currency) {
+        var self = this;
+        if(self.currency !== currency) {
+            self.currency = currency;
+            self.options.ui.currency.position = 'default'
+            self.options.ui.currency.symbol = 'default';
+        }
+        let symbol = self.options?.ui?.currency?.symbol;
+        if (!self.options?.ui?.currency?.position || self.options.ui.currency.position === 'default') {
+            self.options.ui.currency.position = 'start';
+        }
+        if(!symbol || symbol === 'default') {
+            switch (self.currency) {
+                case 'EUR':
+                    self.options.ui.currency.symbol = '€';
+                    break;
+                case 'USD':
+                case 'CAD':
+                case 'NZD':
+                    self.options.ui.currency.symbol = '$';
+                    break;
+                case 'INR':
+                    self.options.ui.currency.symbol = '₹';
+                    break;
+                case 'CLP':
+                    self.options.ui.currency.symbol = 'CLP$';
+                    break;
+                case 'ARS':
+                    self.options.ui.currency.symbol = 'ARS$';
+                    break;
+                case 'PEN':
+                    self.options.ui.currency.symbol = 'S/';
+                    break;
+                case 'NOK':
+                    if (!self.options?.ui?.currency?.position || self.options.ui.currency.position === 'default') {
+                        self.options.ui.currency.position = 'end';
+                    }
+                    self.options.ui.currency.symbol = 'kr';
+                    break;
+                case 'BRL':
+                    self.options.ui.currency.symbol = 'R$';
+                    break;
+                case 'GBP':
+                    self.options.ui.currency.symbol = '£';
+                    break;
+                default:
+                    self.options.ui.currency.symbol = '€';
+                    break;
+            }
+        }
+        if(self.options?.ui?.currency?.show) {
+            if(self.options?.ui?.currency?.position === 'end'){
+                amount = amount.toString() + self.options?.ui?.currency?.symbol;
+            } else {
+                amount = self.options?.ui?.currency?.symbol + amount.toString();
+            }
+        }
+        return amount;
     }
+}
+
+function getAttributesByKeyStart(obj, start) {
+    return Object.keys(obj).reduce((acc, key) => {
+        if (key.startsWith(start)) {
+            acc[key] = obj[key];
+        }
+        return acc;
+    }, {});
 }

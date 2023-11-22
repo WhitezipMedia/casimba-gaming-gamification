@@ -11,7 +11,7 @@ class CGWidget {
     }
 
     connectPragmaticAPI() {
-        this.pragmatic = new Pragmatic('ezeplayz-site');
+        this.pragmatic = new Pragmatic('ezeplayz-site', 'USD');
     }
 
     connectEzugiAPI() {
