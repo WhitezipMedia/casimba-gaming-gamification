@@ -10,6 +10,7 @@ export default class Pragmatic {
         let defaultOptions = {
             tryToConnect: true,
             ui: {
+                class_has_data: 'cg-data',
                 class_dealer_name: 'cg-dealer',
                 currency: {
                     show: true,
@@ -174,6 +175,7 @@ export default class Pragmatic {
             // Dealers name
             if(self.options?.ui?.class_dealer_name && data.dealer?.name) {
                 element.querySelectorAll('.'+self.options.ui.class_dealer_name).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = data.dealer.name;
                 })
             }
@@ -181,24 +183,28 @@ export default class Pragmatic {
             if(self.options?.ui?.seats?.massive?.class_available && data.totalSeatedPlayers && data.tableLimits?.maxPlayers) {
                 let availableSeats = parseInt(data.tableLimits.maxPlayers) - parseInt(data.totalSeatedPlayers);
                 element.querySelectorAll('.'+self.options.ui.seats.massive.class_available).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = availableSeats.toString();
                 })
             }
             //taken massive seats
             if(self.options?.ui?.seats?.massive?.class_taken && data.totalSeatedPlayers) {
                 element.querySelectorAll('.'+self.options.ui.seats.massive.class_taken).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = data.totalSeatedPlayers.toString();
                 })
             }
             //all massive seats
             if(self.options?.ui?.seats?.massive?.class_all && data.tableLimits?.maxPlayers) {
                 element.querySelectorAll('.'+self.options.ui.seats.massive.class_all).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = data.tableLimits.maxPlayers.toString();
                 })
             }
             //seats game live few
             if(self.options?.ui?.seats?.few?.class_main && data.availableSeats) {
                 element.querySelectorAll('.'+self.options.ui.seats.few.class_main).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     let seats = getAttributesByKeyStart(data, 'seat');
                     let html = '';
                     let needsTocreate = false;
@@ -223,12 +229,14 @@ export default class Pragmatic {
             //limit min bet
             if(self.options?.ui?.limits?.class_min_bet) {
                 element.querySelectorAll('.'+self.options?.ui.limits.class_min_bet).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = self.getBeautyCurrency(data.tableLimits.minBet, data.currency);
                 })
             }
             //limit max bet
             if(self.options?.ui?.limits?.class_max_bet) {
                 element.querySelectorAll('.'+self.options?.ui.limits.class_max_bet).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML =self.getBeautyCurrency(data.tableLimits.maxBet, data.currency);
                 })
             }
