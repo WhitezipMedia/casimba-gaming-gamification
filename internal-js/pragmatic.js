@@ -10,6 +10,7 @@ export default class Pragmatic {
         let defaultOptions = {
             tryToConnect: true,
             ui: {
+                theme: null,
                 class_has_data: 'cg-data',
                 class_dealer_name: 'cg-dealer',
                 currency: {
@@ -23,18 +24,10 @@ export default class Pragmatic {
                 class_new_table: 'cg-new-table',
                 class_bet_behind: 'cg-bet-behind',
                 seats: {
-                    massive: {
-                        // This will only show the numbers
-                        class_taken: 'cg-massive-taken',
-                        class_available: 'cg-massive-available',
-                        class_all: 'cg-massive-all',
-                    },
-                    few: {
-                        class_main: 'cg-few-seats',
-                        taken_class_identifier: 'cg-few-taken',
-                        available_class_identifier: 'cg-few-available',
-                        inside_html: '<i class="seat"></i>'
-                    }
+                    class_main: 'cg-few-seats',
+                    taken_class_identifier: 'cg-few-taken',
+                    available_class_identifier: 'cg-few-available',
+                    inside_html: '<i class="seat"></i>'
                 },
                 limits: {
                     class_min_bet: 'cg-minbet',
@@ -185,43 +178,43 @@ export default class Pragmatic {
                     element2.innerHTML = data.dealer.name;
                 })
             }
-            //available massive seats
-            if(self.options?.ui?.seats?.massive?.class_available && data.totalSeatedPlayers && data.tableLimits?.maxPlayers) {
-                let availableSeats = parseInt(data.tableLimits.maxPlayers) - parseInt(data.totalSeatedPlayers);
-                element.querySelectorAll('.'+self.options.ui.seats.massive.class_available).forEach(element2 => {
-                    element2.classList.add(self.options.ui.class_has_data);
-                    element2.innerHTML = availableSeats.toString();
-                })
-            }
-            //taken massive seats
-            if(self.options?.ui?.seats?.massive?.class_taken && data.totalSeatedPlayers) {
-                element.querySelectorAll('.'+self.options.ui.seats.massive.class_taken).forEach(element2 => {
-                    element2.classList.add(self.options.ui.class_has_data);
-                    element2.innerHTML = data.totalSeatedPlayers.toString();
-                })
-            }
-            //all massive seats
-            if(self.options?.ui?.seats?.massive?.class_all && data.tableLimits?.maxPlayers) {
-                element.querySelectorAll('.'+self.options.ui.seats.massive.class_all).forEach(element2 => {
-                    element2.classList.add(self.options.ui.class_has_data);
-                    element2.innerHTML = data.tableLimits.maxPlayers.toString();
-                })
-            }
+            // //available massive seats
+            // if(self.options?.ui?.seats?.massive?.class_available && data.totalSeatedPlayers && data.tableLimits?.maxPlayers) {
+            //     let availableSeats = parseInt(data.tableLimits.maxPlayers) - parseInt(data.totalSeatedPlayers);
+            //     element.querySelectorAll('.'+self.options.ui.seats.massive.class_available).forEach(element2 => {
+            //         element2.classList.add(self.options.ui.class_has_data);
+            //         element2.innerHTML = availableSeats.toString();
+            //     })
+            // }
+            // //taken massive seats
+            // if(self.options?.ui?.seats?.massive?.class_taken && data.totalSeatedPlayers) {
+            //     element.querySelectorAll('.'+self.options.ui.seats.massive.class_taken).forEach(element2 => {
+            //         element2.classList.add(self.options.ui.class_has_data);
+            //         element2.innerHTML = data.totalSeatedPlayers.toString();
+            //     })
+            // }
+            // //all massive seats
+            // if(self.options?.ui?.seats?.massive?.class_all && data.tableLimits?.maxPlayers) {
+            //     element.querySelectorAll('.'+self.options.ui.seats.massive.class_all).forEach(element2 => {
+            //         element2.classList.add(self.options.ui.class_has_data);
+            //         element2.innerHTML = data.tableLimits.maxPlayers.toString();
+            //     })
+            // }
             //seats game live few
-            if(self.options?.ui?.seats?.few?.class_main && data.availableSeats) {
-                element.querySelectorAll('.'+self.options.ui.seats.few.class_main).forEach(element2 => {
+            if(self.options?.ui?.seats?.class_main && typeof data.availableSeats !== "undefined") {
+                element.querySelectorAll('.'+self.options.ui.seats.class_main).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     let seats = getAttributesByKeyStart(data, 'seat');
                     let html = '';
                     let needsTocreate = false;
                     Object.entries(seats).forEach(([key, value]) => {
-                        let occupiedClass = value?self.options.ui.seats.few.taken_class_identifier:self.options.ui.seats.few.available_class_identifier;
+                        let occupiedClass = value?self.options.ui.seats.taken_class_identifier:self.options.ui.seats.available_class_identifier;
                         key = key.replace(/([0-9])/g, '-$1').trim();
                         let seatElement = element2.querySelector('.cg-'+key);
                         if(!needsTocreate && seatElement) {
                             if(!seatElement.classList.contains(occupiedClass)) {
-                                seatElement.classList.remove(self.options.ui.seats.few.taken_class_identifier);
-                                seatElement.classList.remove(self.options.ui.seats.few.available_class_identifier);
+                                seatElement.classList.remove(self.options.ui.seats.taken_class_identifier);
+                                seatElement.classList.remove(self.options.ui.seats.available_class_identifier);
                                 seatElement.classList.add(occupiedClass);
                             }
                         } else {
@@ -248,42 +241,42 @@ export default class Pragmatic {
                 })
             }
             //limit multiseat
-            if(self.options?.ui?.limits?.class_multiple_seat_limit && data.multiseatLimit) {
+            if(self.options?.ui?.limits?.class_multiple_seat_limit && typeof data.multiseatLimit !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.limits.class_multiple_seat_limit).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = data.multiseatLimit;
                 })
             }
             //is table open
-            if(self.options?.ui?.class_table_open && data.tableOpen) {
+            if(self.options?.ui?.class_table_open && typeof data.tableOpen !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.class_table_open).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.setAttribute('data-cg-status', data.tableOpen?'1':'0');
                 })
             }
             //has sidebets
-            if(self.options?.ui?.class_side_bets && data.sidebets) {
+            if(self.options?.ui?.class_side_bets && typeof data.sidebets !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.class_side_bets).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.setAttribute('data-cg-status', data.sidebets?'1':'0');
                 })
             }
             //has multiseats
-            if(self.options?.ui?.class_multiple_seats && data.multiseat) {
+            if(self.options?.ui?.class_multiple_seats && typeof data.multiseat !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.class_multiple_seats).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.setAttribute('data-cg-status', data.multiseat?'1':'0');
                 })
             }
             //is new table
-            if(self.options?.ui?.class_new_table && data.newTable) {
+            if(self.options?.ui?.class_new_table && typeof data.newTable !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.class_new_table).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.setAttribute('data-cg-status', data.newTable?'1':'0');
                 })
             }
             //has bet behind
-            if(self.options?.ui?.class_bet_behind && data.betbehind) {
+            if(self.options?.ui?.class_bet_behind && typeof data.betbehind !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.class_bet_behind).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.setAttribute('data-cg-status', data.betbehind?'1':'0');
