@@ -33,7 +33,7 @@ export default class Pragmatic {
                         class_main: 'cg-few-seats',
                         taken_class_identifier: 'cg-few-taken',
                         available_class_identifier: 'cg-few-available',
-                        inside_html: '<i class="fa fa-bars"></i>'
+                        inside_html: '<i class="seat"></i>'
                     }
                 },
                 limits: {
