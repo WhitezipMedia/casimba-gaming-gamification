@@ -17,6 +17,11 @@ export default class Pragmatic {
                     position: 'default', //default or start or end,
                     symbol: 'default'
                 },
+                class_table_open: 'cg-table-open',
+                class_side_bets: 'cg-side-bets',
+                class_multiple_seats: 'cg-multiple-seats',
+                class_new_table: 'cg-new-table',
+                class_bet_behind: 'cg-bet-behind',
                 seats: {
                     massive: {
                         // This will only show the numbers
@@ -34,6 +39,7 @@ export default class Pragmatic {
                 limits: {
                     class_min_bet: 'cg-minbet',
                     class_max_bet: 'cg-maxbet',
+                    class_multiple_seat_limit: 'cg-multiple-seats-limit',
                 }
             },
         };
@@ -210,6 +216,7 @@ export default class Pragmatic {
                     let needsTocreate = false;
                     Object.entries(seats).forEach(([key, value]) => {
                         let occupiedClass = value?self.options.ui.seats.few.taken_class_identifier:self.options.ui.seats.few.available_class_identifier;
+                        key = key.replace(/([0-9])/g, '-$1').trim();
                         let seatElement = element2.querySelector('.cg-'+key);
                         if(!needsTocreate && seatElement) {
                             if(!seatElement.classList.contains(occupiedClass)) {
@@ -227,17 +234,59 @@ export default class Pragmatic {
                 })
             }
             //limit min bet
-            if(self.options?.ui?.limits?.class_min_bet) {
-                element.querySelectorAll('.'+self.options?.ui.limits.class_min_bet).forEach(element2 => {
+            if(self.options?.ui?.limits?.class_min_bet && data.tableLimits?.minBet) {
+                element.querySelectorAll('.'+self.options.ui.limits.class_min_bet).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = self.getBeautyCurrency(data.tableLimits.minBet, data.currency);
                 })
             }
             //limit max bet
-            if(self.options?.ui?.limits?.class_max_bet) {
-                element.querySelectorAll('.'+self.options?.ui.limits.class_max_bet).forEach(element2 => {
+            if(self.options?.ui?.limits?.class_max_bet && data.tableLimits?.maxBet) {
+                element.querySelectorAll('.'+self.options.ui.limits.class_max_bet).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML =self.getBeautyCurrency(data.tableLimits.maxBet, data.currency);
+                })
+            }
+            //limit multiseat
+            if(self.options?.ui?.limits?.class_multiple_seat_limit && data.multiseatLimit) {
+                element.querySelectorAll('.'+self.options.ui.limits.class_multiple_seat_limit).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
+                    element2.innerHTML = data.multiseatLimit;
+                })
+            }
+            //is table open
+            if(self.options?.ui?.class_table_open && data.tableOpen) {
+                element.querySelectorAll('.'+self.options.ui.class_table_open).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
+                    element2.setAttribute('data-cg-status', data.tableOpen?'1':'0');
+                })
+            }
+            //has sidebets
+            if(self.options?.ui?.class_side_bets && data.sidebets) {
+                element.querySelectorAll('.'+self.options.ui.class_side_bets).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
+                    element2.setAttribute('data-cg-status', data.sidebets?'1':'0');
+                })
+            }
+            //has multiseats
+            if(self.options?.ui?.class_multiple_seats && data.multiseat) {
+                element.querySelectorAll('.'+self.options.ui.class_multiple_seats).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
+                    element2.setAttribute('data-cg-status', data.multiseat?'1':'0');
+                })
+            }
+            //is new table
+            if(self.options?.ui?.class_new_table && data.newTable) {
+                element.querySelectorAll('.'+self.options.ui.class_new_table).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
+                    element2.setAttribute('data-cg-status', data.newTable?'1':'0');
+                })
+            }
+            //has bet behind
+            if(self.options?.ui?.class_bet_behind && data.betbehind) {
+                element.querySelectorAll('.'+self.options.ui.class_bet_behind).forEach(element2 => {
+                    element2.classList.add(self.options.ui.class_has_data);
+                    element2.setAttribute('data-cg-status', data.betbehind?'1':'0');
                 })
             }
         });
