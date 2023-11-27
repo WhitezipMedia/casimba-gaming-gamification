@@ -24,9 +24,9 @@ export default class Pragmatic {
                 class_new_table: 'cg-new-table',
                 class_bet_behind: 'cg-bet-behind',
                 seats: {
-                    class_main: 'cg-few-seats',
-                    taken_class_identifier: 'cg-few-taken',
-                    available_class_identifier: 'cg-few-available',
+                    class_main: 'cg-seats',
+                    taken_class_identifier: 'cg-seats-taken',
+                    available_class_identifier: 'cg-seats-available',
                     inside_html: '<i class="seat"></i>'
                 },
                 limits: {
@@ -178,29 +178,7 @@ export default class Pragmatic {
                     element2.innerHTML = data.dealer.name;
                 })
             }
-            // //available massive seats
-            // if(self.options?.ui?.seats?.massive?.class_available && data.totalSeatedPlayers && data.tableLimits?.maxPlayers) {
-            //     let availableSeats = parseInt(data.tableLimits.maxPlayers) - parseInt(data.totalSeatedPlayers);
-            //     element.querySelectorAll('.'+self.options.ui.seats.massive.class_available).forEach(element2 => {
-            //         element2.classList.add(self.options.ui.class_has_data);
-            //         element2.innerHTML = availableSeats.toString();
-            //     })
-            // }
-            // //taken massive seats
-            // if(self.options?.ui?.seats?.massive?.class_taken && data.totalSeatedPlayers) {
-            //     element.querySelectorAll('.'+self.options.ui.seats.massive.class_taken).forEach(element2 => {
-            //         element2.classList.add(self.options.ui.class_has_data);
-            //         element2.innerHTML = data.totalSeatedPlayers.toString();
-            //     })
-            // }
-            // //all massive seats
-            // if(self.options?.ui?.seats?.massive?.class_all && data.tableLimits?.maxPlayers) {
-            //     element.querySelectorAll('.'+self.options.ui.seats.massive.class_all).forEach(element2 => {
-            //         element2.classList.add(self.options.ui.class_has_data);
-            //         element2.innerHTML = data.tableLimits.maxPlayers.toString();
-            //     })
-            // }
-            //seats game live few
+            //seats game live
             if(self.options?.ui?.seats?.class_main && typeof data.availableSeats !== "undefined") {
                 element.querySelectorAll('.'+self.options.ui.seats.class_main).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
@@ -220,7 +198,7 @@ export default class Pragmatic {
                         } else {
                             needsTocreate = true;
                         }
-                        html += '<div class="cg-'+key+' '+occupiedClass+'">'+self.options.ui.seats.few.inside_html+'</div>';
+                        html += '<div class="cg-'+key+' '+occupiedClass+'">'+self.options.ui.seats.inside_html+'</div>';
                     });
                     if(needsTocreate)
                         element2.innerHTML = html;
