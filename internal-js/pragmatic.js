@@ -59,18 +59,19 @@ export default class Pragmatic {
 
     async initialize() {
         var self = this;
+        console.log(self.operator);
         let postData = {
             "operatorId" : self.operator,
             "provider" : "pragmatic"
         };
         if(self.tables.internal === null){
-            axios.post('https://qa-gameplay-api.casimbagaming.com/games-connect/api/v1/liveTableDetails', postData, {
+            axios.post('https://uat-streaming.casimbagaming.com/liveTableDetails', postData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             }).then((response) => {
-                // self.operatorId = response.data.operatorId;
-                self.operatorId = 'ppcgi00000000295';
+                self.operatorId = response.data.casinoId;
+                // self.operatorId = 'ppcgi00000000295';
                 self.tables.internal = response.data.games;
                 let data = {
                     "type":"available",

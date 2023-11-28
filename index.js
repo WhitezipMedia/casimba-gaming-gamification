@@ -10,8 +10,8 @@ class CGWidget {
         this.pragmatic = null;
     }
 
-    connectPragmaticAPI() {
-        this.pragmatic = new Pragmatic('ezeplayz-site', 'USD');
+    connectPragmaticAPI(operator, currency = 'EUR', options = null) {
+        this.pragmatic = new Pragmatic(operator, currency, options);
     }
 
     connectEzugiAPI() {
