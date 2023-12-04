@@ -268,7 +268,7 @@ export default class Pragmatic {
         var self = this;
         if(self.currency !== currency) {
             self.currency = currency;
-            self.options.ui.currency.position = 'default'
+            self.options.ui.currency.position = 'default';
             self.options.ui.currency.symbol = 'default';
         }
         let symbol = self.options?.ui?.currency?.symbol;
