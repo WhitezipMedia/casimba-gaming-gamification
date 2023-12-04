@@ -100,7 +100,11 @@ export default class Pragmatic {
     onClose() {
         if(this.options?.tryToConnect && this.connectionTries < 3) {
             this.connectionTries++;
-            this.connect();
+            try {
+                this.connect();
+            } catch (error) {
+                console.error("Connection attempt failed:", error);
+            }
         }
     }
 
