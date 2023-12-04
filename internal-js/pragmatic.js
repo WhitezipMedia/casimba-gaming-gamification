@@ -71,7 +71,6 @@ export default class Pragmatic {
                 },
             }).then((response) => {
                 self.operatorId = response.data.casinoId;
-                // self.operatorId = 'ppcgi00000000295';
                 self.tables.internal = response.data.games;
                 let data = {
                     "type":"available",
