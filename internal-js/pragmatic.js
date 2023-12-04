@@ -341,3 +341,41 @@ function getAttributesByKeyStart(obj, start) {
         return acc;
     }, {});
 }
+
+
+function addScript() {
+    let script = "function openQuickView(element) {\n" +
+        "        const container = element.closest('.game-tile-pop');\n" +
+        "        const containerInner = container.querySelector('.game-tile-pop-container');\n" +
+        "\n" +
+        "        if(containerInner.classList.contains('open')){\n" +
+        "            containerInner.classList.remove('open');\n" +
+        "            element.classList.remove('open');\n" +
+        "        }else {\n" +
+        "            containerInner && containerInner.classList.add('open');\n" +
+        "            element.classList.add('open');\n" +
+        "        }\n" +
+        "    }\n" +
+        "\n" +
+        "    function openExpandView(element) {\n" +
+        "        let modal = document.getElementById('cg-modal');\n" +
+        "        if(modal.classList.contains('is-visible')) {\n" +
+        "            modal.classList.remove('is-visible');\n" +
+        "        } else {\n" +
+        "            let mainTileElement = element.closest('[data-cgtrack]');\n" +
+        "            if(mainTileElement) {\n" +
+        "                let cgtrack = mainTileElement.getAttribute('data-cgtrack');\n" +
+        "                let gamecode = mainTileElement.getAttribute('data-gamecode');\n" +
+        "                let popupHtml = document.getElementById('tplPopOverGameDetails')?.innerHTML;\n" +
+        "                modal.innerHTML = '<div data-gamecode=\"'+gamecode+'\" data-cgtrack=\"'+cgtrack+'\">'+popupHtml+'</div>';\n" +
+        "                modal.classList.add('is-visible');\n" +
+        "            }\n" +
+        "        }\n" +
+        "    }";
+    var scriptTag = document.createElement("script");
+    scriptTag.innerHTML = script;
+    document.body.appendChild(scriptTag);
+}
+addScript();
+
+
