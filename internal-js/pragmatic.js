@@ -71,7 +71,6 @@ export default class Pragmatic {
                 },
             }).then((response) => {
                 self.operatorId = response.data.casinoId;
-                // self.operatorId = 'ppcgi00000000295';
                 self.tables.internal = response.data.games;
                 let data = {
                     "type":"available",
@@ -99,7 +98,7 @@ export default class Pragmatic {
     }
 
     onClose() {
-        if(this.options?.tryToConnect && this.connectionTries < 3) {
+        if (this.options && this.options.tryToConnect && this.connectionTries < 3) {
             this.connectionTries++;
             this.connect();
         }
@@ -173,25 +172,26 @@ export default class Pragmatic {
         var self = this;
         document.querySelectorAll('[data-cgtrack="'+data.tableId+'"]').forEach((element) => {
             // Dealers name
-            if(self.options?.ui?.class_dealer_name && data.dealer?.name) {
-                element.querySelectorAll('.'+self.options.ui.class_dealer_name).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.class_dealer_name && data.dealer && data.dealer.name) {
+                element.querySelectorAll('.' + self.options.ui.class_dealer_name).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = data.dealer.name;
                 })
             }
+
             //seats game live
-            if(self.options?.ui?.seats?.class_main && typeof data.availableSeats !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.seats.class_main).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.seats && self.options.ui.seats.class_main && typeof data.availableSeats !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.seats.class_main).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     let seats = getAttributesByKeyStart(data, 'seat');
                     let html = '';
                     let needsTocreate = false;
                     Object.entries(seats).forEach(([key, value]) => {
-                        let occupiedClass = value?self.options.ui.seats.taken_class_identifier:self.options.ui.seats.available_class_identifier;
+                        let occupiedClass = value ? self.options.ui.seats.taken_class_identifier : self.options.ui.seats.available_class_identifier;
                         key = key.replace(/([0-9])/g, '-$1').trim();
-                        let seatElement = element2.querySelector('.cg-'+key);
-                        if(!needsTocreate && seatElement) {
-                            if(!seatElement.classList.contains(occupiedClass)) {
+                        let seatElement = element2.querySelector('.cg-' + key);
+                        if (!needsTocreate && seatElement) {
+                            if (!seatElement.classList.contains(occupiedClass)) {
                                 seatElement.classList.remove(self.options.ui.seats.taken_class_identifier);
                                 seatElement.classList.remove(self.options.ui.seats.available_class_identifier);
                                 seatElement.classList.add(occupiedClass);
@@ -199,66 +199,74 @@ export default class Pragmatic {
                         } else {
                             needsTocreate = true;
                         }
-                        html += '<div class="cg-'+key+' '+occupiedClass+'">'+self.options.ui.seats.inside_html+'</div>';
+                        html += '<div class="cg-' + key + ' ' + occupiedClass + '">' + self.options.ui.seats.inside_html + '</div>';
                     });
-                    if(needsTocreate)
+                    if (needsTocreate)
                         element2.innerHTML = html;
                 })
             }
+
             //limit min bet
-            if(self.options?.ui?.limits?.class_min_bet && data.tableLimits?.minBet) {
-                element.querySelectorAll('.'+self.options.ui.limits.class_min_bet).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.limits && self.options.ui.limits.class_min_bet && data.tableLimits && data.tableLimits.minBet) {
+                element.querySelectorAll('.' + self.options.ui.limits.class_min_bet).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = self.getBeautyCurrency(data.tableLimits.minBet, data.currency);
                 })
             }
+
             //limit max bet
-            if(self.options?.ui?.limits?.class_max_bet && data.tableLimits?.maxBet) {
-                element.querySelectorAll('.'+self.options.ui.limits.class_max_bet).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.limits && self.options.ui.limits.class_max_bet && data.tableLimits && data.tableLimits.maxBet) {
+                element.querySelectorAll('.' + self.options.ui.limits.class_max_bet).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
-                    element2.innerHTML =self.getBeautyCurrency(data.tableLimits.maxBet, data.currency);
+                    element2.innerHTML = self.getBeautyCurrency(data.tableLimits.maxBet, data.currency);
                 })
             }
+
             //limit multiseat
-            if(self.options?.ui?.limits?.class_multiple_seat_limit && typeof data.multiseatLimit !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.limits.class_multiple_seat_limit).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.limits && self.options.ui.limits.class_multiple_seat_limit && typeof data.multiseatLimit !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.limits.class_multiple_seat_limit).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
                     element2.innerHTML = data.multiseatLimit;
                 })
             }
+
             //is table open
-            if(self.options?.ui?.class_table_open && typeof data.tableOpen !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.class_table_open).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.class_table_open && typeof data.tableOpen !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.class_table_open).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
-                    element2.setAttribute('data-cg-status', data.tableOpen?'1':'0');
+                    element2.setAttribute('data-cg-status', data.tableOpen ? '1' : '0');
                 })
             }
+
             //has sidebets
-            if(self.options?.ui?.class_side_bets && typeof data.sidebets !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.class_side_bets).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.class_side_bets && typeof data.sidebets !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.class_side_bets).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
-                    element2.setAttribute('data-cg-status', data.sidebets?'1':'0');
+                    element2.setAttribute('data-cg-status', data.sidebets ? '1' : '0');
                 })
             }
+
             //has multiseats
-            if(self.options?.ui?.class_multiple_seats && typeof data.multiseat !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.class_multiple_seats).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.class_multiple_seats && typeof data.multiseat !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.class_multiple_seats).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
-                    element2.setAttribute('data-cg-status', data.multiseat?'1':'0');
+                    element2.setAttribute('data-cg-status', data.multiseat ? '1' : '0');
                 })
             }
+
             //is new table
-            if(self.options?.ui?.class_new_table && typeof data.newTable !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.class_new_table).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.class_new_table && typeof data.newTable !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.class_new_table).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
-                    element2.setAttribute('data-cg-status', data.newTable?'1':'0');
+                    element2.setAttribute('data-cg-status', data.newTable ? '1' : '0');
                 })
             }
+
             //has bet behind
-            if(self.options?.ui?.class_bet_behind && typeof data.betbehind !== "undefined") {
-                element.querySelectorAll('.'+self.options.ui.class_bet_behind).forEach(element2 => {
+            if (self.options && self.options.ui && self.options.ui.class_bet_behind && typeof data.betbehind !== "undefined") {
+                element.querySelectorAll('.' + self.options.ui.class_bet_behind).forEach(element2 => {
                     element2.classList.add(self.options.ui.class_has_data);
-                    element2.setAttribute('data-cg-status', data.betbehind?'1':'0');
+                    element2.setAttribute('data-cg-status', data.betbehind ? '1' : '0');
                 })
             }
         });
@@ -271,8 +279,8 @@ export default class Pragmatic {
             self.options.ui.currency.position = 'default';
             self.options.ui.currency.symbol = 'default';
         }
-        let symbol = self.options?.ui?.currency?.symbol;
-        if (!self.options?.ui?.currency?.position || self.options.ui.currency.position === 'default') {
+        let symbol = (self.options && self.options.ui && self.options.ui.currency) ? self.options.ui.currency.symbol : undefined;
+        if (!symbol || (self.options.ui.currency && self.options.ui.currency.position === 'default')) {
             self.options.ui.currency.position = 'start';
         }
         if(!symbol || symbol === 'default') {
@@ -298,7 +306,7 @@ export default class Pragmatic {
                     self.options.ui.currency.symbol = 'S/';
                     break;
                 case 'NOK':
-                    if (!self.options?.ui?.currency?.position || self.options.ui.currency.position === 'default') {
+                    if (!self.options || !self.options.ui || !self.options.ui.currency || !self.options.ui.currency.position || self.options.ui.currency.position === 'default') {
                         self.options.ui.currency.position = 'end';
                     }
                     self.options.ui.currency.symbol = 'kr';
@@ -314,11 +322,11 @@ export default class Pragmatic {
                     break;
             }
         }
-        if(self.options?.ui?.currency?.show) {
-            if(self.options?.ui?.currency?.position === 'end'){
-                amount = amount.toString() + self.options?.ui?.currency?.symbol;
+        if (self.options && self.options.ui && self.options.ui.currency && self.options.ui.currency.show) {
+            if (self.options.ui.currency.position === 'end') {
+                amount = amount.toString() + (self.options.ui.currency.symbol || '');
             } else {
-                amount = self.options?.ui?.currency?.symbol + amount.toString();
+                amount = (self.options.ui.currency.symbol || '') + amount.toString();
             }
         }
         return amount;
