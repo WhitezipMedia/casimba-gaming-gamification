@@ -368,8 +368,7 @@ function getAttributesByKeyStart(obj, start) {
 
 
 function getCgTemplate() {
-    return '\n' +
-        '    <div class="game-tile-detail cg-info-tile-game">\n' +
+    return '<div class="game-tile-detail">\n' +
         '        <div class="game-tile-detail_name">\n' +
         '            <div class="cg-dealer"></div>\n' +
         '        </div>\n' +
@@ -381,7 +380,6 @@ function getCgTemplate() {
         '            <div class="cg-label">\n' +
         '                <span>DEALER</span>\n' +
         '                <div class="cg-dealer"></div>\n' +
-        '                {{--<i class="cg-expand" onclick="openExpandView(this)"></i>--}}\n' +
         '            </div>\n' +
         '            <div class="row-pop minmax-row">\n' +
         '                <div class="min-col">\n' +
@@ -418,6 +416,5 @@ function getCgTemplate() {
         '                </div>\n' +
         '            </div>\n' +
         '        </div>\n' +
-        '    </div>\n' +
-        '</div>';
+        '    </div>';
 }
