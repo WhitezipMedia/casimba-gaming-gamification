@@ -418,3 +418,16 @@ function getCgTemplate() {
         '        </div>\n' +
         '    </div>';
 }
+
+function openQuickView(element) {
+    const container = element.closest('.game-tile-pop');
+    const containerInner = container.querySelector('.game-tile-pop-container');
+
+    if (containerInner.classList.contains('open')) {
+        containerInner.classList.remove('open');
+        element.classList.remove('open');
+    } else {
+        containerInner && containerInner.classList.add('open');
+        element.classList.add('open');
+    }
+}
