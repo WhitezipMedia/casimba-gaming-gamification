@@ -10,7 +10,7 @@ export default class Pragmatic {
         let defaultOptions = {
             tryToConnect: true,
             ui: {
-                theme: null,
+                theme: 'black-green-modern',
                 class_has_data: 'cg-data',
                 class_dealer_name: 'cg-dealer',
                 currency: {
@@ -44,6 +44,7 @@ export default class Pragmatic {
             mix: [],
         };
         this.subscribedTables = [];
+        this.addTheme();
         this.connect();
         this.addTimers();
     };
@@ -141,7 +142,12 @@ export default class Pragmatic {
         var self = this;
         self.tables.mix.forEach((game) => {
            document.querySelectorAll('[data-gameCode="'+game.gameId+'"]').forEach((element) => {
-               if(!element.hasAttribute('data-cgtrack')) element.setAttribute('data-cgtrack', game.externalId);
+               if(!element.hasAttribute('data-cgtrack')) {
+                   element.setAttribute('data-cgtrack', game.externalId);
+                   if(self.options.ui.theme !== null && typeof self.options.ui.theme !== 'undefined') {
+                       element.insertAdjacentHTML('beforeend', getCgTemplate());
+                   }
+               }
            })
         });
         self.suscribeToTables();
@@ -166,6 +172,24 @@ export default class Pragmatic {
     addTimers() {
         var self = this;
         setInterval(self.addDomAttributeToTrack.bind(self), 4000);
+    }
+
+    addTheme() {
+        var self = this;
+        switch (self.options.ui.theme) {
+            case 'black-green-modern':
+                var scriptTag = document.createElement("script");
+                scriptTag.setAttribute('src','http://example.com/site.js');
+                document.body.appendChild(scriptTag);
+                var styleTag = document.createElement("link");
+                styleTag.setAttribute('type','text/css');
+                styleTag.setAttribute('rel','stylesheet');
+                styleTag.setAttribute('href','http://example.com/'+self.options.ui.theme+'/main.css');
+                document.head.appendChild(scriptTag);
+                break;
+            default:
+                break;
+        }
     }
 
     onRegisterTableMessageRecieved(data) {
@@ -340,4 +364,60 @@ function getAttributesByKeyStart(obj, start) {
         }
         return acc;
     }, {});
+}
+
+
+function getCgTemplate() {
+    return '\n' +
+        '    <div class="game-tile-detail cg-info-tile-game">\n' +
+        '        <div class="game-tile-detail_name">\n' +
+        '            <div class="cg-dealer"></div>\n' +
+        '        </div>\n' +
+        '        <div class="cg-seats"></div>\n' +
+        '    </div>\n' +
+        '    <div class="game-tile-pop">\n' +
+        '        <div class="game-tile-pop_open" onclick="openQuickView(this)"></div>\n' +
+        '        <div class="game-tile-pop-container">\n' +
+        '            <div class="cg-label">\n' +
+        '                <span>DEALER</span>\n' +
+        '                <div class="cg-dealer"></div>\n' +
+        '                {{--<i class="cg-expand" onclick="openExpandView(this)"></i>--}}\n' +
+        '            </div>\n' +
+        '            <div class="row-pop minmax-row">\n' +
+        '                <div class="min-col">\n' +
+        '                    <span>MIN</span>\n' +
+        '                    <div class="cg-minbet"></div>\n' +
+        '                </div>\n' +
+        '                <div class="mid-col">BETS</div>\n' +
+        '                <div class="max-col">\n' +
+        '                    <span>MAX</span>\n' +
+        '                    <div class="cg-maxbet"></div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="cg-seats"></div>\n' +
+        '            <div class="cg-label2">\n' +
+        '                <div class="cg-table-open">\n' +
+        '                    <span>Table Open:</span>\n' +
+        '                    <div class="cg-checkbox"></div>\n' +
+        '                </div>\n' +
+        '                <div class="cg-side-bets">\n' +
+        '                    <span>Side Bets:</span>\n' +
+        '                    <div class="cg-checkbox"></div>\n' +
+        '                </div>\n' +
+        '                <div class="cg-multiple-seats">\n' +
+        '                    <span>Multiple seats:</span>\n' +
+        '                    <div class="cg-checkbox"></div>\n' +
+        '                </div>\n' +
+        '                <div class="cg-new-table">\n' +
+        '                    <span>New Table:</span>\n' +
+        '                    <div class="cg-checkbox"></div>\n' +
+        '                </div>\n' +
+        '                <div class="cg-bet-behind">\n' +
+        '                    <span>Bet Behind:</span>\n' +
+        '                    <div class="cg-checkbox"></div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>\n' +
+        '</div>';
 }
