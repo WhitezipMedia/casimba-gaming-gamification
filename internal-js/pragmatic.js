@@ -184,7 +184,7 @@ export default class Pragmatic {
                 var styleTag = document.createElement("link");
                 styleTag.setAttribute('type','text/css');
                 styleTag.setAttribute('rel','stylesheet');
-                styleTag.setAttribute('href','https://cdn01.casimbagaming.com/'+self.options.ui.theme+'/main.css');
+                styleTag.setAttribute('href','https://cdn01.casimbagaming.com/gamification/'+self.options.ui.theme+'/main.css');
                 document.head.appendChild(styleTag);
                 break;
             default:
