@@ -179,12 +179,12 @@ export default class Pragmatic {
         switch (self.options.ui.theme) {
             case 'black-green-modern':
                 var scriptTag = document.createElement("script");
-                scriptTag.setAttribute('src','http://example.com/site.js');
+                scriptTag.setAttribute('src','https://cdn01.casimbagaming.com/gamification/main.js');
                 document.body.appendChild(scriptTag);
                 var styleTag = document.createElement("link");
                 styleTag.setAttribute('type','text/css');
                 styleTag.setAttribute('rel','stylesheet');
-                styleTag.setAttribute('href','http://example.com/'+self.options.ui.theme+'/main.css');
+                styleTag.setAttribute('href','https://cdn01.casimbagaming.com/'+self.options.ui.theme+'/main.css');
                 document.head.appendChild(scriptTag);
                 break;
             default:
@@ -417,17 +417,4 @@ function getCgTemplate() {
         '            </div>\n' +
         '        </div>\n' +
         '    </div>';
-}
-
-function openQuickView(element) {
-    const container = element.closest('.game-tile-pop');
-    const containerInner = container.querySelector('.game-tile-pop-container');
-
-    if (containerInner.classList.contains('open')) {
-        containerInner.classList.remove('open');
-        element.classList.remove('open');
-    } else {
-        containerInner && containerInner.classList.add('open');
-        element.classList.add('open');
-    }
 }
