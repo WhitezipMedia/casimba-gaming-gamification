@@ -1,6 +1,6 @@
 {
   "name": "@whitezipmedia/casimba-gaming-gamification",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Casimba Gaming Gamification",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "axios": "^1.6.0"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com"
   },
   "repository": {
     "type": "git",
