@@ -60,7 +60,6 @@ export default class Pragmatic {
 
     async initialize() {
         var self = this;
-        console.log(self.operator);
         let postData = {
             "operatorId" : self.operator,
             "provider" : "pragmatic"
@@ -71,13 +70,18 @@ export default class Pragmatic {
                     'Content-Type': 'application/json',
                 },
             }).then((response) => {
-                self.operatorId = response.data.casinoId;
-                self.tables.internal = response.data.games;
-                let data = {
-                    "type":"available",
-                    "casinoId": self.operatorId
-                };
-                self.send(data);
+                if(response.data && response.data.games) {
+                    self.operatorId = response.data.casinoId;
+                    self.tables.internal = response.data.games;
+                    let data = {
+                        "type":"available",
+                        "casinoId": self.operatorId
+                    };
+                    self.send(data);
+                } else {
+                    self.options.tryToConnect = false;
+                    self.socket.close();
+                }
             }).catch(e => {
                 console.log(e);
             });
@@ -108,7 +112,6 @@ export default class Pragmatic {
     async generateMixTables() {
         var self = this;
         self.tables.mix = [];
-        console.log("IM here");
         for (const internal of self.tables.internal) {
             if(self.tables.external.includes(internal.externalId)) {
                 self.tables.mix.push(internal)
