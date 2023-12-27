@@ -66,7 +66,7 @@ export default class Pragmatic {
             "provider" : "pragmatic"
         };
         if(self.tables.internal === null){
-            axios.post('https://uat-streaming.casimbagaming.com/liveTableDetails', postData, {
+            axios.post('https://streaming.casimbagaming.com/liveTableDetails', postData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
