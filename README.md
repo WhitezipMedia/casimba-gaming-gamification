@@ -1,9 +1,9 @@
 <h1>INSTALL</h1>
 All game tiles shoud have attribute:<br> <code>data-gamecode="TABLECODE"</code>
 
-https://www.npmjs.com/package/casimba-gaming-gamification
+https://www.npmjs.com/package/@casimbagaming/casimba-gaming-gamification
 <h2>for versioning you can use</h2>
-npm i casimba-gaming-gamification
+npm i @casimbagaming/casimba-gaming-gamification
 <h1>for latest version you can use: </h1<
 <h2>For npm:<br></h2>
 <code>npm install git@github.com:WhitezipMedia/casimba-gaming-gamification.git</code>
