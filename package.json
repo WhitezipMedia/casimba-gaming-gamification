@@ -1,5 +1,5 @@
 {
-  "name": "casimba-gaming-gamification",
+  "name": "@whitezipmedia/casimba-gaming-gamification",
   "version": "1.0.0",
   "description": "Casimba Gaming Gamification",
   "main": "index.js",
@@ -10,5 +10,16 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.0"
-  }
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WhitezipMedia/casimba-gaming-gamification.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WhitezipMedia/casimba-gaming-gamification/issues"
+  },
+  "homepage": "https://github.com/WhitezipMedia/casimba-gaming-gamification#readme"
 }
