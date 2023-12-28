@@ -1,6 +1,6 @@
 {
   "name": "@casimbagaming/casimba-gaming-gamification",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Casimba Gaming Gamification",
   "main": "index.js",
   "scripts": {

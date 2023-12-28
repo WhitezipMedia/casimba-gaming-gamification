@@ -378,7 +378,7 @@ function getCgTemplate() {
         '        <div class="cg-seats"></div>\n' +
         '    </div>\n' +
         '    <div class="game-tile-pop">\n' +
-        '        <div class="game-tile-pop_open" onclick="openQuickView(this)"></div>\n' +
+        '        <div class="game-tile-pop_open" onclick="openQuickView(event)"></div>\n' +
         '        <div class="game-tile-pop-container">\n' +
         '            <div class="cg-label">\n' +
         '                <span>DEALER</span>\n' +
