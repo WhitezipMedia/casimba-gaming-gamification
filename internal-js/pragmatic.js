@@ -151,6 +151,16 @@ export default class Pragmatic {
                    if(self.options.ui.theme !== null && typeof self.options.ui.theme !== 'undefined') {
                        element.insertAdjacentHTML('beforeend', getCgTemplate());
                    }
+               } else {
+                   if(element.getAttribute('data-cgtrack') !== game.externalId) {
+                       element.setAttribute('data-cgtrack', game.externalId);
+                       element.classList.add('cg-hide');
+                       if(element.querySelector('.game-tile-detail')) element.removeChild(element.querySelector('.game-tile-detail'));
+                       if(element.querySelector('.game-tile-pop')) element.removeChild(element.querySelector('.game-tile-pop'));
+                       if(self.options.ui.theme !== null && typeof self.options.ui.theme !== 'undefined') {
+                           element.insertAdjacentHTML('beforeend', getCgTemplate());
+                       }
+                   }
                }
            })
         });
