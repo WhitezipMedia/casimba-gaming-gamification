@@ -147,6 +147,7 @@ export default class Pragmatic {
            document.querySelectorAll('[data-gameCode="'+game.gameId+'"]').forEach((element) => {
                if(!element.hasAttribute('data-cgtrack')) {
                    element.setAttribute('data-cgtrack', game.externalId);
+                   element.classList.add('cg-hide');
                    if(self.options.ui.theme !== null && typeof self.options.ui.theme !== 'undefined') {
                        element.insertAdjacentHTML('beforeend', getCgTemplate());
                    }
@@ -296,6 +297,8 @@ export default class Pragmatic {
                     element2.setAttribute('data-cg-status', data.betbehind ? '1' : '0');
                 })
             }
+
+            if(element.classList.contains('cg-hide')) element.classList.remove('cg-hide');
         });
     }
 
@@ -372,9 +375,6 @@ function getAttributesByKeyStart(obj, start) {
 
 function getCgTemplate() {
     return '<div class="game-tile-detail">\n' +
-        '        <div class="game-tile-detail_name">\n' +
-        '            <div class="cg-dealer"></div>\n' +
-        '        </div>\n' +
         '        <div class="cg-seats"></div>\n' +
         '    </div>\n' +
         '    <div class="game-tile-pop">\n' +
