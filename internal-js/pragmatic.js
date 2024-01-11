@@ -36,7 +36,7 @@ export default class Pragmatic {
                 }
             },
         };
-        this.options = {...defaultOptions, options};
+        this.options = mergeJSON(defaultOptions, options);
         this.connectionTries = 1;
         this.tables = {
             internal: null,
@@ -371,6 +371,29 @@ export default class Pragmatic {
         }
         return amount;
     }
+}
+
+function mergeJSON(defaultJson, optionsJson) {
+    function mergeRecursive(defaultObj, optionsObj) {
+        for (var key in optionsObj) {
+            if (optionsObj.hasOwnProperty(key)) {
+                if (defaultObj.hasOwnProperty(key) && typeof defaultObj[key] === 'object' && typeof optionsObj[key] === 'object') {
+                    // Recursive merge for objects
+                    defaultObj[key] = mergeRecursive(defaultObj[key], optionsObj[key]);
+                } else {
+                    // Non-object values are directly overwritten
+                    defaultObj[key] = optionsObj[key];
+                }
+            }
+        }
+        return defaultObj;
+    }
+
+    // Make a deep copy of the default JSON to avoid modifying the original object
+    let mergedJSON = JSON.parse(JSON.stringify(defaultJson));
+
+    // Merge the default JSON with options JSON
+    return mergeRecursive(mergedJSON, optionsJson);
 }
 
 function getAttributesByKeyStart(obj, start) {
