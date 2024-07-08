@@ -4,6 +4,7 @@ export default class GamePostMessages {
     constructor(){
         this.addPostEventListeners();
         this.onStartGameCallback = null;
+        this.onBalanceUpdateCallback = null;
         this.onGameAnimationStartedCallback = null;
         this.onGameAnimationFinishedCallback = null;
     }
@@ -13,24 +14,30 @@ export default class GamePostMessages {
     }
 
     async executeGameCallBacks(data) {
-        if(this.onStartGameCallback && typeof this.onStartGameCallback === 'function') {
-            let balance = await this.getBalance();
-            this.onStartGameCallback(balance);
+        if(['examplebalanceUpdate'].includes(data.type)) {
+            if(this.onBalanceUpdateCallback && typeof this.onBalanceUpdateCallback === 'function') {
+                let balance = await this.getBalance(data);
+                if(balance !== null) this.onBalanceUpdateCallback(balance);
+            }
         }
     }
 
-    async getBalance() {
+    async getBalance(data) {
         //REGAL BET Process
-        try {
-            let response = await axios.post('https://streaming.casimbagaming.com/liveTableDetails', {playerIdentifier: '1234567890'}, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            return response.data || null;
-        } catch (e) {
-            console.log(e);
-            return null;
+        if(data.origin == 'test.com') {
+            return data.amount;
+        } else if (data.origin == 'test2.com') {
+            try {
+                let response = await axios.post('https://streaming.casimbagaming.com/liveTableDetails', {playerIdentifier: '1234567890'}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                return response.data || null;
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
         }
     }
 }
